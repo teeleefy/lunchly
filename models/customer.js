@@ -12,9 +12,18 @@ class Customer {
     this.lastName = lastName;
     this.phone = phone;
     this.notes = notes;
+    
   }
 
+  get fullName(){
+        let name = `${this.firstName} ${this.lastName}`;
+        return name;
+      }
+
+
   /** find all customers. */
+
+
 
   static async all() {
     const results = await db.query(
@@ -29,6 +38,40 @@ class Customer {
     return results.rows.map(c => new Customer(c));
   }
 
+  static async search(name) {
+    let sqlName = `%${name}%`;
+    const results = await db.query(
+      `SELECT id,
+        first_name AS "firstName", 
+        last_name AS "lastName", 
+        phone, 
+        notes FROM customers 
+        WHERE (first_name ilike $1) OR 
+        (last_name ilike $1) 
+        ORDER BY last_name, first_name`, [sqlName]
+    );
+    return results.rows.map(c => new Customer(c));
+  }
+
+  static async topTen() {
+    const results = await db.query(
+      `SELECT c.id,
+         c.first_name AS "firstName", 
+         c.last_name AS "lastName",
+         c.phone,
+         c.notes
+         FROM reservations AS r 
+         JOIN customers AS c 
+         ON r.customer_id=c.id 
+         GROUP BY c.id 
+         ORDER BY COUNT(c.id) 
+         DESC LIMIT 10;
+        `
+    );
+    return results.rows.map(c => new Customer(c));
+  }
+
+// SELECT first_name, last_name FROM customers WHERE (first_name ilike '%am%') OR (last_name ilike '%am%');
   /** get a customer by ID. */
 
   static async get(id) {
@@ -78,6 +121,8 @@ class Customer {
       );
     }
   }
+
+  
 }
 
 module.exports = Customer;

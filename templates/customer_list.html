@@ -3,12 +3,13 @@
 {% block content %}
 
 <a class="btn btn-primary" style="float: right" href="/add/">Add a Customer</a></p>
+<a class="btn btn-primary mr-3" style="float: right" href="/top-ten/">See our Top 10 Customers!</a></p>
 
 <h1>Customers</h1>
 
 <ul style="column-count: 4">
   {% for customer in customers %}
-  <li><a href="/{{ customer.id }}/">{{ customer.firstName }} {{ customer.lastName }}</a></li>
+  <li><a href="/{{ customer.id }}/">{{ customer.fullName }}</a></li>
   {% endfor %}
 </ul>
 
