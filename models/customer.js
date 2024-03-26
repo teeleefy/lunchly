@@ -38,18 +38,35 @@ class Customer {
     return results.rows.map(c => new Customer(c));
   }
 
-  static async search(name) {
-    let sqlName = `%${name}%`;
-    const results = await db.query(
+  static async search(first,last) {
+    let sqlFirst = `%${first}%`;
+    let results;
+    let sqlLast = `%${last}%`;
+    if(!last){
+      results = await db.query(
       `SELECT id,
         first_name AS "firstName", 
         last_name AS "lastName", 
         phone, 
         notes FROM customers 
-        WHERE (first_name ilike $1) OR 
-        (last_name ilike $1) 
-        ORDER BY last_name, first_name`, [sqlName]
+        WHERE first_name ILIKE $1 OR 
+        last_name ILIKE $1 
+        ORDER BY last_name, first_name`, [sqlFirst]
     );
+    }
+    else{
+      results = await db.query(
+      `SELECT id,
+        first_name AS "firstName", 
+        last_name AS "lastName", 
+        phone, 
+        notes FROM customers 
+        WHERE first_name ILIKE $1 AND 
+        last_name ILIKE $2 
+        ORDER BY last_name, first_name`, [sqlFirst, sqlLast]
+    );
+    }
+    // console.log("&&&&&&",results);
     return results.rows.map(c => new Customer(c));
   }
 

@@ -21,7 +21,11 @@ router.get("/", async function(req, res, next) {
 router.get("/search", async function(req, res, next) {
   try {
     let name = req.query.name;
-    const customers = await Customer.search(name);
+    let array=name.split(" ");
+    let first = array[0];
+    let last = array[1];
+    console.log("&&&&&&", name);
+    const customers = await Customer.search(first,last);
     return res.render("customer_list.html", { customers });
   } catch (err) {
     return next(err);
